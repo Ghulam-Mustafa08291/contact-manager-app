@@ -67,7 +67,6 @@ public class UserController {
         return contactRepository.findByUserId(user.getId());
     }
 
-
     @GetMapping("/by-email")
     public User getUserByEmail(@RequestParam String email) {
         System.out.println("Looking up user with email: " + email);
@@ -78,8 +77,6 @@ public class UserController {
     public Optional<User> getUserById(@PathVariable Long id) {
         return userRepository.findById(id);
     }
-
-    // Add this method to your existing UserController.java
 
     @GetMapping("/profile")
     public ResponseEntity<?> getUserProfile(@AuthenticationPrincipal String email) {
@@ -96,6 +93,83 @@ public class UserController {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error retrieving user profile: " + e.getMessage());
+        }
+    }
+
+    // for changing name of uesr
+    @PutMapping("/update-profile")
+    public ResponseEntity<?> updateProfile(@AuthenticationPrincipal String email, 
+                                         @RequestBody Map<String, String> updateData) {
+        try {
+            User user = userRepository.findByEmail(email);
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("User not found");
+            }
+
+            String newName = updateData.get("name");
+            if (newName == null || newName.trim().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Name cannot be empty");
+            }
+
+            // Update the user's name
+            user.setName(newName.trim());
+            User updatedUser = userRepository.save(user);
+
+            System.out.println("Profile updated for user: " + email + ", new name: " + newName);
+            return ResponseEntity.ok(updatedUser);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error updating profile: " + e.getMessage());
+        }
+    }
+
+
+    @PutMapping("/change-password")
+    public ResponseEntity<?> changePassword(@AuthenticationPrincipal String email, 
+                                          @RequestBody Map<String, String> passwordData) {
+        try {
+            User user = userRepository.findByEmail(email);
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("User not found");
+            }
+
+            String currentPassword = passwordData.get("currentPassword");
+            String newPassword = passwordData.get("newPassword");
+
+            // Validate input
+            if (currentPassword == null || newPassword == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Current password and new password are required");
+            }
+
+            // Check if current password is correct
+            if (!user.getPassword().equals(currentPassword)) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Current password is incorrect");
+            }
+
+            // Validate new password length
+            if (newPassword.length() < 6) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("New password must be at least 6 characters long");
+            }
+
+            // Update the password
+            user.setPassword(newPassword);
+            userRepository.save(user);
+
+            System.out.println("Password changed successfully for user: " + email);
+            return ResponseEntity.ok(Map.of("message", "Password changed successfully"));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error changing password: " + e.getMessage());
         }
     }
 }
