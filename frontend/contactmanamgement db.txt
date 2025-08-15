@@ -1,0 +1,19 @@
+in my contact manager database
+
+users table:
+has id,email,name and password
+
+
+->each contact profile has first_name,last_name,title,email addresses(labelled by work,home etc) and phone numbers (labelled by home,work etc)
+
+contact table:
+has id,first_name,last_name,title,user_id
+
+email_address table:
+has id,email,label,contact_id
+
+phone_number table:
+has id,label,number,contact_id
+
+i think through the help of contact table,we find the contacts of a user,and then useing the id in contact table,we find
+the phone_numbers and emails of a particular contact.

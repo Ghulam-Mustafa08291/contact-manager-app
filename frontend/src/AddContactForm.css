@@ -1,0 +1,86 @@
+/* Container spacing */
+div {
+  margin-bottom: 12px;
+}
+
+/* Input fields */
+.inputFields {
+  padding: 8px 10px;
+  display: block;
+  margin: 6px 0;
+  width: 500px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+/* .emailfield{
+    padding: 8px 10px;
+  margin: 6px 0;
+  width: 250px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px; 
+} */
+
+.formContainer{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: black;
+    margin-left: 400px;
+    min-height: 85vh;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+/* Email + Phone container */
+.emailContainer,    
+.phoneNumberContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+/* Dropdown (select) */
+.emailContainer select,
+.phoneNumberContainer select {
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+/* Add/Remove buttons */
+.addButton,
+.removeButton {
+  padding: 6px 12px;
+  margin-top: 6px;
+  font-size: 14px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+/* Add button style */
+.addButton {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.addButton:hover {
+  background-color: #45a049;
+}
+
+/* Remove button style */
+.removeButton {
+  background-color: #f44336;
+  color: white;
+}
+
+.removeButton:hover {
+  background-color: #d32f2f;
+}
