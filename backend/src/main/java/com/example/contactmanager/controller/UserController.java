@@ -30,8 +30,45 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public User registerUser(@RequestBody User user) {
-        return userRepository.save(user);
+    public ResponseEntity<?> registerUser(@RequestBody User user) {
+        try {
+            // Check if email already exists
+            User existingUser = userRepository.findByEmail(user.getEmail().toLowerCase());
+            if (existingUser != null) {
+                return ResponseEntity.status(HttpStatus.CONFLICT)
+                        .body("Email already exists");
+            }
+
+            // Validate input
+            if (user.getName() == null || user.getName().trim().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Name is required");
+            }
+
+            if (user.getEmail() == null || user.getEmail().trim().isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Email is required");
+            }
+
+            if (user.getPassword() == null || user.getPassword().length() < 6) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Password must be at least 6 characters long");
+            }
+
+            // Clean up data
+            user.setName(user.getName().trim());
+            user.setEmail(user.getEmail().trim().toLowerCase());
+        
+            User savedUser = userRepository.save(user);
+            System.out.println("New user registered: " + savedUser.getEmail());
+        
+            return ResponseEntity.ok(savedUser);
+        
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Registration failed: " + e.getMessage());
+        }
     }
 
     @PostMapping("/login")

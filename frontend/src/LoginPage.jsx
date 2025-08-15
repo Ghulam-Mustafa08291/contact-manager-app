@@ -12,10 +12,8 @@ function LoginPage() {
         passwordError: "wrong password"
     });
 
-
     const onemailChange = (e) => {
        setinpEmail(e.target.value);
-        
     }
 
     const onPasswordChange = (e)=> {
@@ -26,69 +24,76 @@ function LoginPage() {
         if (inpEmail.length == 0){
             setError({...error,emailError:"incorrect email"})
             alert(error.emailError)
+            return; // Stop execution if validation fails
         }
 
         if (inpPassword.length <1){
             setError({...error,passwordError:"Password field cant be empty!"})
             alert(error.passwordError)
+            return; // Stop execution if validation fails
         }
 
         try {
-      const response = await fetch('http://localhost:8080/api/users/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email:inpEmail, password:inpPassword })
-      });
+            const response = await fetch('http://localhost:8080/api/users/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email:inpEmail, password:inpPassword })
+            });
 
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Login successful:', data);
+            if (response.ok) {
+                const data = await response.json();
+                console.log('Login successful:', data);
 
-        // Save token in localStorage
-        localStorage.setItem('token', data.token);
+                // Save token in localStorage
+                localStorage.setItem('token', data.token);
 
-        // Optionally save user info (if needed later)
-        localStorage.setItem('user', JSON.stringify(data.user));
-        navigate('/dashboard'); // Go to dashboard after successful login
-      } else {
-        alert('Invalid email or password');
-      }
-    } catch (error) {
-      console.error('Login error:', error);
-      alert('Error logging in');
-    }
-
-
-
+                // Optionally save user info (if needed later)
+                localStorage.setItem('user', JSON.stringify(data.user));
+                navigate('/dashboard'); // Go to dashboard after successful login
+            } else {
+                alert('Invalid email or password');
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            alert('Error logging in');
+        }
     };
-        
-    
 
-  return (
-    
-    <div className="login-wrapper">
-        <div className="login-container">
-        <h2>Login</h2>
-        <input
-            value={inpEmail}
-            onChange={onemailChange}
-            type="text"
-            placeholder="Enter your email"
-            className="login-input"
-        />
-        <input
-            value={inpPassword}
-            onChange={onPasswordChange}
-            type="password"
-            placeholder="Enter your password"
-            className="login-input"
-        />
-        <button onClick={handleLogin} className="login-button">Login</button>
+    const handleGoToSignup = () => {
+        navigate('/register');
+    };
+
+    return (
+        <div className="login-wrapper">
+            <div className="login-container">
+                <h2>Login</h2>
+                <input
+                    value={inpEmail}
+                    onChange={onemailChange}
+                    type="email"
+                    placeholder="Enter your email"
+                    className="login-input"
+                />
+                <input
+                    value={inpPassword}
+                    onChange={onPasswordChange}
+                    type="password"
+                    placeholder="Enter your password"
+                    className="login-input"
+                />
+                <button onClick={handleLogin} className="login-button">Login</button>
+                
+                <div className="signup-section">
+                    <p className="signup-text">Don't have an account?</p>
+                    <button onClick={handleGoToSignup} className="signup-button">
+                        Sign Up
+                    </button>
+                </div>
+            </div>
         </div>
-    </div>
-  );
+    );
 }
 
 export default LoginPage;

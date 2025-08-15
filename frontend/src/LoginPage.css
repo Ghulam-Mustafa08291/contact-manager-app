@@ -45,3 +45,34 @@
 .login-button:hover {
   background-color: #0056b3;
 }
+
+
+/* Add these to your existing LoginPage.css */
+
+.signup-section {
+    margin-top: 25px;
+    padding-top: 25px;
+    border-top: 1px solid #eee;
+}
+
+.signup-text {
+    margin: 0 0 10px 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.signup-button {
+    background: transparent;
+    color: #667eea;
+    border: 2px solid #667eea;
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.signup-button:hover {
+    background: #667eea;
+    color: white;
+}
