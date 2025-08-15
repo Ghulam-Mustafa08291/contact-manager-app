@@ -29,6 +29,14 @@ public class JwtFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
+        // Skip JWT processing for login and register endpoints
+        String requestPath = request.getRequestURI();
+        if (requestPath.equals("/api/users/login") || requestPath.equals("/api/users/register")) {
+            System.out.println("Skipping JWT filter for: " + requestPath);
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         final String authHeader = request.getHeader("Authorization");
         System.out.println("=== JWT Filter Debug ===");
         System.out.println("Request URL: " + request.getRequestURL());

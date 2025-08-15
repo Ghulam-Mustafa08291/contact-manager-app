@@ -1,6 +1,7 @@
 package com.example.contactmanager.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 @Entity
@@ -16,7 +17,8 @@ public class User {
     @Column(unique = true)
     private String email;
 
-    @JsonIgnore
+    // Remove @JsonIgnore and use @JsonProperty instead
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     public User() {}
