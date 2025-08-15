@@ -10,6 +10,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
 
 import java.util.List;
 import java.util.Map;
@@ -96,13 +101,51 @@ public class UserController {
     }
 
     @GetMapping("/contacts")
-    public List<Contact> getContacts(@AuthenticationPrincipal String email) {
-        User user = userRepository.findByEmail(email);
-        if (user == null) {
-            return List.of(); // or throw 401/404 depending on your preference
+    public ResponseEntity<?> getContacts(
+            @AuthenticationPrincipal String email,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "firstName") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir) {
+
+        try {
+            User user = userRepository.findByEmail(email);
+            if (user == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body("User not found");
+            }
+
+            // Create sort object
+            Sort sort = sortDir.equalsIgnoreCase("desc")
+                    ? Sort.by(sortBy).descending()
+                    : Sort.by(sortBy).ascending();
+
+            // Create pageable object
+            Pageable pageable = PageRequest.of(page, size, sort);
+
+            // Get paginated results
+            Page<Contact> contactPage = contactRepository.findByUserId(user.getId(), pageable);
+
+            // Return structured response
+            Map<String, Object> response = Map.of(
+                    "contacts", contactPage.getContent(),
+                    "currentPage", contactPage.getNumber(),
+                    "totalPages", contactPage.getTotalPages(),
+                    "totalElements", contactPage.getTotalElements(),
+                    "size", contactPage.getSize(),
+                    "hasNext", contactPage.hasNext(),
+                    "hasPrevious", contactPage.hasPrevious()
+            );
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error fetching contacts: " + e.getMessage());
         }
-        return contactRepository.findByUserId(user.getId());
     }
+
 
     @GetMapping("/by-email")
     public User getUserByEmail(@RequestParam String email) {
